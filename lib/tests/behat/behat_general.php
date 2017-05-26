@@ -220,7 +220,12 @@ class behat_general extends behat_base {
      * @Given /^I accept the currently displayed dialog$/
      */
     public function accept_currently_displayed_alert_dialog() {
-        $this->getSession()->getDriver()->getWebDriverSession()->accept_alert();
+        $driver = $this->getSession()->getDriver();
+        if ($driver instanceof \DMore\ChromeDriver\ChromeDriver) {
+            $driver->acceptAlert();
+        } else {
+            $driver->getWebDriverSession()->accept_alert();
+        }
     }
 
     /**
@@ -228,7 +233,12 @@ class behat_general extends behat_base {
      * @Given /^I dismiss the currently displayed dialog$/
      */
     public function dismiss_currently_displayed_alert_dialog() {
-        $this->getSession()->getDriver()->getWebDriverSession()->dismiss_alert();
+        $driver = $this->getSession()->getDriver();
+        if ($driver instanceof \DMore\ChromeDriver\ChromeDriver) {
+            $driver->dismissAlert();
+        } else {
+            $this->getSession()->getDriver()->getWebDriverSession()->dismiss_alert();
+        }
     }
 
     /**
@@ -252,11 +262,7 @@ class behat_general extends behat_base {
      * @param int $seconds
      */
     public function i_wait_seconds($seconds) {
-        if ($this->running_javascript()) {
-            $this->getSession()->wait($seconds * 1000, false);
-        } else {
-            sleep($seconds);
-        }
+        sleep($seconds);
     }
 
     /**
@@ -1610,7 +1616,12 @@ class behat_general extends behat_base {
         }
         // Gets the node based on the requested selector type and locator.
         $node = $this->get_selected_node($selectortype, $element);
-        $this->getSession()->getDriver()->post_key("\xEE\x80\x84", $node->getXpath());
+        $driver = $this->getSession()->getDriver();
+        if ($driver instanceof \Moodle\BehatExtension\Driver\MoodleSelenium2Driver) {
+            $driver->post_key("\xEE\x80\x84", $node->getXpath());
+        } else {
+            $driver->keyDown($node->getXpath(), "\t");
+        }
     }
 
     /**

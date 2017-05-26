@@ -727,7 +727,7 @@ class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
             $pending = '';
             try {
                 $jscode = '
-                    return function() {
+                    (function() {
                         if (typeof M === "undefined") {
                             if (document.readyState === "complete") {
                                 return "";
@@ -741,7 +741,7 @@ class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
                         } else {
                             return "incomplete"
                         }
-                    }();';
+                    }());';
                 $pending = $this->getSession()->evaluateScript($jscode);
             } catch (NoSuchWindow $nsw) {
                 // We catch an exception here, in case we just closed the window we were interacting with.
@@ -959,7 +959,12 @@ class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
         }
         $this->ensure_node_is_visible($node); // Ensures hidden elements can't be clicked.
         $xpath = $node->getXpath();
-        $script = "Syn.click({{ELEMENT}})";
-        $this->getSession()->getDriver()->triggerSynScript($xpath, $script);
+        $driver = $this->getSession()->getDriver();
+        if ($driver instanceof \Moodle\BehatExtension\Driver\MoodleSelenium2Driver) {
+            $script = "Syn.click({{ELEMENT}})";
+            $driver->triggerSynScript($xpath, $script);
+        } else {
+            $driver->click($xpath);
+        }
     }
 }

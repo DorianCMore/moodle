@@ -66,7 +66,7 @@ class behat_block_comments extends behat_base {
             $this->find_link(get_string('savecomment'))->click();
             // Delay after clicking so that additional comments will have unique time stamps.
             // We delay 1 second which is all we need.
-            $this->getSession()->wait(1000, false);
+            sleep(1);
 
         } else {
 
