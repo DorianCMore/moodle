@@ -1,0 +1,108 @@
+variables:
+  DOCROOT: "${CI_PROJECT_DIR}"
+  PROJECT_PATH: "${CI_PROJECT_DIR}"
+  MYSQL_ROOT_PASSWORD: password
+  MYSQL_DATABASE: moodle
+
+stages:
+  - test
+
+.behat_template: &behat_template
+  stage: test
+  tags: [docker]
+  services: [mysql]
+  script:
+    - composer install -o --ansi --no-progress
+    - cp config-dist.php config.php
+    - mkdir -p "$HOME"/roots/base
+    - sed -i -e "s%= 'moodle'%= 'travis_ci_test'%" -e "s%= 'password'%= ''%" config.php
+    - sed -i -e "s%http://example.com/moodle%https://localhost%" -e "s%/home/example/moodledata%${CI_PROJECT_DIR}/roots/base%" config.php
+    - sed -i -e "s%= 'pgsql'%= 'mysqli'%" -e "s%= 'username'%= 'root'%" -e "s%=> 'utf8mb4_unicode_ci'%=> 'utf8mb4_bin'%" -e "s%dbhost    = 'localhost'%dbhost = 'mysql'" config.php
+    - php admin/tool/behat/cli/init.php
+    - echo "$(find . -name '*.feature' -type f -exec du -h {} + | sort -h | awk '{print $2}' | awk -v run=${RUN} 'NR%16==run')" > to_run.rerun
+    - php admin/tool/behat/cli/behat.yml.php > behat_ci.yml
+    - vendor/bin/behat -c behat_ci.yml to_run.rerun
+  cache:
+    key: common
+    paths:
+      - vendor
+
+Behat 0:
+  <<: *behat_template
+  before_script:
+    - export RUN=0
+
+Behat 1:
+  <<: *behat_template
+  before_script:
+    - export RUN=1
+
+Behat 2:
+  <<: *behat_template
+  before_script:
+    - export RUN=2
+
+Behat 3:
+  <<: *behat_template
+  before_script:
+    - export RUN=3
+
+Behat 4:
+  <<: *behat_template
+  before_script:
+    - export RUN=4
+
+Behat 5:
+  <<: *behat_template
+  before_script:
+    - export RUN=5
+
+Behat 6:
+  <<: *behat_template
+  before_script:
+    - export RUN=6
+
+Behat 7:
+  <<: *behat_template
+  before_script:
+    - export RUN=7
+
+Behat 8:
+  <<: *behat_template
+  before_script:
+    - export RUN=8
+
+Behat 9:
+  <<: *behat_template
+  before_script:
+    - export RUN=9
+
+Behat 10:
+  <<: *behat_template
+  before_script:
+    - export RUN=10
+
+Behat 11:
+  <<: *behat_template
+  before_script:
+    - export RUN=11
+
+Behat 12:
+  <<: *behat_template
+  before_script:
+    - export RUN=12
+
+Behat 13:
+  <<: *behat_template
+  before_script:
+    - export RUN=13
+
+Behat 14:
+  <<: *behat_template
+  before_script:
+    - export RUN=14
+
+Behat 15:
+  <<: *behat_template
+  before_script:
+    - export RUN=15
